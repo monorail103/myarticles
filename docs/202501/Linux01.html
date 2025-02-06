@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サーバー構築</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Linux(Ubuntu)でのサーバー構築</h1>
+        <p>日付: 2025年2月7日</p>
+    </header>
+    <main>
+        <nav class="toc">
+            <h1>目次</h1>
+            <ul id="toc-list"></ul>
+        </nav>
+        <section>
+            <h2>1. はじめに</h2>
+            <p>
+                今回の実験では、Gateway製ノートパソコン・NE132を使用する。
+                このノートパソコンは、ストレージとしてeMMC（64GB）が使用されていることが特徴である。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241216_050639797.jpg" alt="図1: Gateway製ノートパソコン" width="60%"/>
+                <figcaption>Gateway製ノートパソコン</figcaption>
+            </figure>
+            <p>
+                また、今回使用するOS・ソフトウェアの基本的な仕様は以下の通り。
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>Windowsパソコン</th>
+                        <th>Linuxコンピューター</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OS</td>
+                        <td>Windows 11 24H2</td>
+                        <td>Ubuntu 22.04 LTS</td>
+                    </tr>
+                    <tr>
+                        <td>その他</td>
+                        <td>Rufus 4.6.2208</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                前提条件として、以下のリストに記したものが別途用意されているものとする。
+            </p>
+            <ul>
+                <li>空のUSBメモリ（16GB以上が望ましい）</li>
+                <li>UbuntuのISOイメージ</li>
+            </ul>
+            <p>
+                文中では、Gateway製ノートパソコンについて便宜上「Linuxコンピューター」、実験に使用するWindows11搭載のノートパソコンを「Windowsパソコン」と表記することがある。
+            </p>
+        </section>
+        <section>
+            <h2>2. ブータブルディスクの準備</h2>
+            <p>
+                コンピュータにUbuntuをインストールするためには、別のコンピュータを用いてブータブルディスクを作成する必要がある。
+                今回は、別途用意したWindowsパソコンを使用して、ブータブルディスクを作成する。
+                ブータブルディスクとは、コンピュータに差し込むことで使用可能なUSBメモリなどの記憶媒体である。
+            </p>
+            <p>
+                まず、USBメモリをWindowsパソコンに差し込んでおく。このUSBメモリは、ブータブルディスクとなる。
+                次に、ブータブルディスクの作成に必要なソフトウェアであるRufusを、`https://rufus.ie/` からインストールする。
+                Rufusは、USBメモリにISOイメージを書き込むためのソフトウェアである。起動すると、以下のような画面が表示される。
+            </p>
+            <figure>
+                <img src="Linux_files/スクリーンショット 2024-12-09 111801.png">
+                <figcaption>Rufusの画面</figcaption>
+            </figure>
+            <p>
+                起動後、パーティション構成の設定を`MBR`から`GPT`に変更する。
+                次に、ブータブルディスクとして使用するISOイメージを選択する。今回は、事前に用意したUbuntuのイメージを選択する。
+                その後スタートを押すと、データのインストールが開始する。
+            </p>
+            <figure>
+                <img src="Linux_files/スクリーンショット 2024-12-09 112703.png">
+                <figcaption>インストール中の画面</figcaption>
+            </figure>
+            <p>
+                しばらく待つと、ブータブルディスクが完成する。このUSBメモリを用いて、Ubuntuをインストールすることができる。
+            </p>
+        </section>
+        <section>
+            <h2>3. Ubuntuのインストール</h2>
+            <p>
+                USBメモリをノートパソコンに接続すると、以下のような画面が表示される。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_022220239.jpg" width="60%">
+                <figcaption>起動後すぐに表示される画面</figcaption>
+            </figure>
+            <p>
+                この画面で上部にある`try or install ubuntu`を選択し、しばらく待つと、以下のような画面に遷移する。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_023523771.jpg" width="60%">
+                <figcaption>遷移後、最初の画面</figcaption>
+            </figure>
+            <p>
+                左側の言語選択では日本語を選択。この画面では`Ubuntuをインストール`を選択する。
+                次に、インターネット選択については`今はインターネットに接続しない`を選択。この選択肢については、英語で表記されている場合がある。
+                その後、インストールするUbuntuのサイズについて問われるので、`通常のインストール`を選択。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_023629638.jpg" width="80%">
+                <figcaption>インストール画面１</figcaption>
+            </figure>
+            <p>
+                インストール形式について問われるので、`ディスクを削除してインストール`を選択。
+                すでにデータが入っている場合、それらのデータは削除される。
+                その後、アカウント設定では、適切なユーザー名とパスワードを設定する。これらの情報は、OSのログインに必要となる。
+                時刻設定のため地域を選択しなければならないので、`Tokyo`を選択。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_024004488.jpg" width="80%">
+                <figcaption>インストール画面２</figcaption>
+            </figure>
+            <p>
+                以上の設定が完了すると、インストールが開始される。インストール中は、以下のような画面が表示される。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_024046064.jpg" width="80%">
+                <figcaption>Ubuntuをインストール中の画面</figcaption>
+            </figure>
+            <p>
+                インストールが完了すると、以下のダイアログが表示される。このダイアログで`今すぐ再起動する`を選択すると、再起動が開始する。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_045335604.jpg" width="80%">
+                <figcaption>再起動を実行する前の様子</figcaption>
+            </figure>
+
+            <h3>特殊ケース：不具合の処理</h2>
+            <p>
+                今回の実験では、エラーが発生した。この項では、私が行った解決策について記述する。
+            </p>
+            <p>
+                Ubuntuの設定を完了し、インストール処理後の再起動をしている途中で、以下のような画面が表示された。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_042310979.jpg" width="80%">
+                <figcaption>エラー画面</figcaption>
+            </figure>
+            <p>
+                `Default Boot Device Missing or Boot Failed. Insert Recovery Media and Hit any key Then Select 'Boot Manager' to choose a new Boot Device or to Boot Recovery Media`
+                と表示され、インストールしたはずのUbuntuが正しく起動しないという状況に陥った。
+            </p>
+            <p>
+                ここで私はまず、電源を切り、F2キーを押してBIOSの設定画面に入った。BIOSの設定画面は以下の通りである。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_043200914.jpg" width="80%">
+                <figcaption>BIOS Boot設定画面</figcaption>
+            </figure>
+            <p>
+                この図には、BIOSにおいて`Boot`の設定画面を表示している状態が写されている。ここで`Boot Mode`が`UEFI`になっていることを確認した。
+                また、起動ディスクの優先順位において、`EMMC`が最も上に表示されていることも確認した。
+                次に、下図に示す`Security`画面において、設定を行った。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_043114111.jpg" width="80%">
+                <figcaption>BIOS Security画面</figcaption>
+            </figure>
+            <p>
+                `Select an UEFI file as trusted`を選択し、`eMMC`→`EFI`→`Ubuntu`→`shimx64.efi`を選択。
+            </p>
+            <p>
+                この設定を行えば、正常にUbuntuが起動する状態になるとされる。しかし、私の場合では、これらの設定を実行しても正常に起動しなかった。
+                今回の場合は`Boot`設定で`Boot Mode`を一旦`Legacy`に戻し、再起動を行った。その後、もう一度BIOS設定画面に入り、設定を`UEFI`に戻した。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_042631495.jpg" width="80%">
+                <figcaption>Boot Modeを変更後の様子</figcaption>
+            </figure>
+            <p>
+                変更前後において`Security`設定や`Boot`設定での、操作可能な範囲が変わっていることが確認できている。
+                具体的には、`Security`設定において`Set Supervisor Password`でパスワードの設定を求められた。
+                ここで再度、`Select an UEFI file as trusted`を選択し、`eMMC`→`EFI`→`Ubuntu`→`shimx64.efi`を選択。
+                その後、`Security`に関しての操作を参照し、再度同様に設定を実施。
+                これらの設定に関する因果関係などは不明であるが、この状態で再起動すると、起動時に表示されるエラーが`No Bootable Device`となった。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_043329495.jpg" width="80%">
+                <figcaption>No Bootable Deviceと表示された状態</figcaption>
+            </figure>
+            <p>
+                以上の操作を行ったあと、この項の手順を再度最初から実行することで、Ubuntuのインストールに成功した。
+                インストール後の再起動時にUSBを引き抜く場面があるが、その場面で適切に抜かなければ、インストールに失敗するので注意が必要である。
+            </p>
+            <figure>
+                <img src="Linux_files/PXL_20241209_051922866.jpg" width="80%">
+                <figcaption>Ubuntuのインストールを終え、再起動直後の画面</figcaption>
+            </figure>
+            
+        </section>
+        <section>
+            <h2>4. サーバー構築にあたっての補足情報</h2>
+            <p>
+                サーバー構築にあたっては、Ubuntuにおいて使用する機能を理解しておくことが重要である。
+                この項では、操作に必要となるアプリケーションや、意味を覚えておくべきコマンドについてを説明する。
+            </p>
+            <h3>Ubuntuで使用するアプリ</h3>
+            <p>
+                Ubuntuにはプリインストールされたアプリが数多く存在する。その中で今回使用する事が多いアプリは、以下の通りである。
+                <ul>
+                    <li><strong>端末:</strong> Windows・Macのターミナルに該当する。コマンド操作を行うためのソフトウェア。今回の実験では、ほとんどの場面で使用する。</li>
+                    <li><strong>Firefox:</strong> Webブラウザであり、Windowsでいうとedge、MacではSafariに相当するアプリケーション。サーバーを立てたあと、確認に使用する。</li>
+                </ul>
+            </p>
+            <p>
+                なお、ここまでの設定だけでは日本語入力を用いることはできないが、今後の操作においては問題ない。
+            </p>
+            <h3>使用状況の確認</h3>
+            <p>
+                <code>uptime</code>を使用することで、サーバーへの負荷を表示させることができる。右側に表示されている数字は左から1分, 5分, 15分あたりの負荷である。
+                これらの数値がCPUのクロック数を上回っている場合、サーバーの性能が不足していることを意味する。
+            </p>
+            <figure>
+                <img src="Screenshot/image_001.png" width="80%">
+                <figcaption>uptimeコマンドの使用時</figcaption>
+            </figure>
+            <p>
+                <code>df</code>コマンドを使用すると、ディスクの使用状況を確認できる。ファイルシステムの一覧と容量、使用済みメモリとその残りを表示できる。
+                単に<code>df</code>とすると、単位がバイトのままになる。そのため、見やすくするために<code>df -h</code>とする。
+            </p>
+            <figure>
+                <img src="Screenshot/image_006.png" width="80%">
+                <figcaption>df -hコマンドの使用時</figcaption>
+            </figure>
+            <p>
+                メモリの使用状況を確認するには、<code>free</code>コマンドを使用する。<code>df</code>コマンドと同様で、<code>free -h</code>とすると単位がわかりやすくなる。
+            </p>
+            <figure>
+                <img src="Screenshot/image_007.png" width="80%">
+                <figcaption>free -hコマンドの使用時</figcaption>
+            </figure>
+            <p>なお、<code>top</code>コマンドを使用すると、free, uptimeの出力内容を、自動更新でまとめて見ることができる。</p>
+            <h3>スケジュール・時刻</h3>
+            <p>
+                <code>crontab</code>コマンドを使用すると、定められた時間にコマンドを実行することができる。
+                crontabというファイルに記述するという形で設定を行う。
+                例えば、毎時5分にコマンドを実行するなどといったことが実現できる。
+                <code>crontab -e</code>で、nanoでの編集画面に入ることができる。なお、初期起動時には、エディタの選択を求められる。
+                <code>crontab -l</code>で設定を表示し、<code>crontab -r</code>ですべて削除することができる。
+            </p>
+            <figure>
+                <img src="Screenshot/image_008.png" width="80%">
+                <figcaption>crontabの設定画面</figcaption>
+            </figure>
+            <h3>基本的なファイル操作</h3>
+            <p>
+                この項では、Webサーバーの設定ファイルの操作などで使う、意味を含めて覚えておくべきファイル操作コマンドについて説明する。
+            </p>
+            <p>
+                ファイルの作成には、<code>touch</code>コマンドを使用する。例えば、ファイル名がfilename.txtの場合、以下のようにする。
+            </p>
+            <span class="command">$ touch filename.txt</span><br>
+            <p>
+                ターミナルからファイルを編集する際には、Vimというソフトウェアを利用することができる。
+                Vimの起動には<code>vi</code>コマンドを使用する。例えば、filename.txtを編集する場合、以下のようにする。
+            </p>
+            <span class="command">$ vi filename.txt</span><br>
+            <p>
+                ファイルのアクセス権を変更するには、<code>chmod</code>コマンドを使用する。例えば、ファイルに読み取り、書き込み、実行の権限を与えるには、以下のようにする。
+            </p>
+            <span class="command">$ chmod 755 filename</span><br>
+            <p>
+                <code>chmod</code>に続く数字"755"には、以下のリストに記したような意味がある。[1]
+                <ul>
+                    <li>
+                        <strong>最も左の桁:</strong> 所有者の権限を表す。7は、二進数では111に相当する。二進数表記において左の桁から順に読み取り・書き込み・実行の権限を意味し、1の場合許可となる。<br>
+                        なお、ディレクトリの実行権限とは、ディレクトリ内のファイルへのアクセス権限である。<br>
+                        7であるため、すべての操作が許可されている。
+                    </li>
+                    <li>
+                        <strong>真ん中の桁:</strong> 所有グループの権限を表す。5は二進数で011に相当するため、書き込みと実行が許可されていることとなる。
+                    </li>
+                    <li>
+                        <strong>最も右の桁:</strong> その他ユーザーの権限を表す。所有グループと同様、書き込みと実行が許可されていることとなる。
+                    </li>
+                </ul>
+            </p>
+            <p>
+                所有者を変更するには、<code>chown</code>コマンドを使用する。例えば、ファイルの所有者をuserに変更するには、以下のようにする。
+            </p>
+            <span class="command">$ chown user filename.txt</span><br>
+            <p>
+                ファイルをコピーするには、<code>cp</code>コマンドを使用する。例えば、ファイルを別のディレクトリにコピーするには、以下のようにする。
+            </p>
+            <span class="command">$ cp filename /path/to/destination/</span><br>
+            <p>
+                ファイルを移動するには、<code>mv</code>コマンドを使用する。例えば、ファイルを別のディレクトリに移動するには、以下のようにする。
+            </p>
+            <span class="command">$ mv filename /path/to/destination/</span><br>
+            <p>
+                ファイルを削除するには、<code>rm</code>コマンドを使用する。例えば、ファイルを削除するには、以下のようにする。
+            </p>
+            <span class="command">$ rm filename.txt</span><br>
+            <h3>ユーザー管理</h3>
+            <p>
+                ユーザーが登録されているファイルは、<code>/etc/passwd</code>に保存されている。
+                名前の通り、もともとはパスワードが保存されているファイルであったが、現在ではパスワードは保存されていない。
+                ユーザーのパスワードは、<code>/etc/shadow</code>に保存されている。
+                なお、後述する<code>sudo</code>コマンドの権限については、<code>/etc/sudoers</code>に保存されている。
+            </p>
+            <p>
+                ユーザー管理は、サーバー構築において重要な要素である。ユーザーの追加には、<code>adduser</code>コマンドを使用する。
+            </p>
+            <span class="command">$ adduser username</span><br>
+            <p>
+                ユーザーの削除には、<code>deluser</code>コマンドを使用する。例えば、ユーザーを削除するには、以下のようにする。
+            </p>
+            <span class="command">$ deluser username</span><br>
+            <p>
+                ユーザーのパスワードを設定するには、<code>passwd</code>コマンドを使用する。例えば、ユーザーのパスワードを設定するには、以下のようにする。
+            </p>
+            <span class="command">$ passwd username</span><br>
+            <p>
+                この操作を行うと、パスワードの設定が要求される。設定する新たなパスワードを2回入力することで、パスワードの設定が完了する。
+            </p>
+            <p>
+                ユーザーをグループに追加するには、<code>usermod</code>コマンドを使用する。例えば、ユーザーをgroupnameに追加するには、以下のようにする。
+            </p>
+            <span class="command">$ usermod -aG groupname username</span><br>
+            <p>
+                -aGについて、それぞれ簡単に解説する。
+                <ul>
+                    <li><strong>-a</strong>: 追加するというオプション</li>
+                    <li><strong>-G</strong> 副グループを指定する</li>
+                </ul>
+                ただ単に-Gだけにすると、groupnameのみがユーザーのグループとなる（groupnameだけ、に上書きされる）。
+                そのため、-aGとすることで、グループを上書きすることなく追加することができる。
+            </p>
+            <p>
+                ユーザーをグループから削除するには、<code>gpasswd</code>コマンドを使用する。例えば、ユーザーをgroupnameから削除するには、以下のようにする。
+            </p>
+            <span class="command">$ gpasswd -d username groupname</span><br>
+            <p>
+                ユーザーを切り替えるには、<code>su</code>コマンドを使用する。例えば、ユーザーを切り替えるには、以下のようにする。
+            </p>
+            <span class="command">$ su username</span><br>
+            <h3>rootの設定・sudoコマンド</h3>
+            <p>
+                rootユーザーは、Linuxで最高権限を持つユーザーである。rootユーザーはすべてのコマンドを実験することができる。
+                sudoコマンドを使用することで、root権限を持たないユーザーでもroot権限と同様に操作を行うことができる。
+            </p>
+            <p>
+                なお、rootユーザーになるには、以下のコマンドを実行する。<br>
+                今回の場合、基本的にこの操作は行わず、sudoコマンドを使用する。
+            </p>
+            <span class="command">$ su</span><br>
+            <p>
+                サーバー構築の場面ではsudoを多用するため、その作用については十分に理解しておく必要がある。
+                rootユーザーのパスワードを設定するには、以下のコマンドを実行する。
+            </p>
+            <span class="command">$ sudo passwd root</span><br>
+        </section>
+        <section>
+            <h2>5. Webサーバーの構築</h2>
+            <p>
+                今回はUbuntuを使用しているため、パッケージインストールの際には<code>sudo apt install</code>から始まるコマンドを用いる。
+                他の系統のOSでは<code>sudo yum</code>など、apt以外の場合もある。<br>
+                また、パッケージのインストール前には必ず以下のコマンドを実行する。
+            </p>
+            <span class="command">$ sudo apt update</span><br>
+            <h3>Apacheのインストール</h3>
+            <p>
+                Apacheとは、Apache Software Foundationが開発したWebサーバーソフトウェアである。
+                このソフトウェアを使用することで、Webページを公開することができる。
+                <a href="https://httpd.apache.org/">公式サイト</a>によると、インターネット上で最も人気のあるWebサーバーソフトウェアという記述がある。
+                Apacheは1995年に開発が開始した、オープンソースのソフトウェアである。
+            </p>
+            <p>
+                まず、Apacheのインストールを行うため、以下のコマンドを実行する。
+            </p>
+            <span class="command">$ sudo apt -y install apache2</span>
+            <p>
+                すると、<span class="error">waiting for cache lock could not get lock /var/lib/dpkg/lock-frontend</span>というエラーが発生した。
+                他のプロセスが使用しているため起こるエラーであるため、以下の３つを実行。
+            </p>
+            <span class="command">$ sudo rm /var/lib/apt/lists/lock<br>$ sudo rm /var/lib/dpkg/lock<br>$ sudo rm /var/lib/dpkg/lock-frontend</span><br>
+            <p>
+                これらの3つのコマンドについて、実行の完了には2-3分ほどかかったが、その後は問題なくインストール作業を行うことができた。
+            </p>
+            <figure>
+                <img src="Screenshot/image_011.png" width="80%">
+                <figcaption>3つのコマンドを実行したあとの様子</figcaption>
+            </figure>
+            <h3>Apacheの実行設定</h3>
+            <p>
+                Apacheのインストールが完了したら、以下のコマンドを実行してApacheを起動した上、自動起動を有効化する。
+                自動起動とは、コンピューターを再起動した際にApacheが自動で起動する設定である。
+            </p>
+            <span class="command">
+                $ sudo systemctl start apache2<br>
+                $ sudo systemctl enable apache2
+            </span>
+            <p>
+                また、Apacheのステータスを確認する際は以下のコマンドを実行する。
+            </p>
+            <span class="command">
+                $ sudo systemctl status apache2
+            </span>
+            <figure>
+                <img src="Screenshot/image_013.png" width="80%">
+                <figcaption>Apacheのステータス確認画面</figcaption>
+            </figure>
+            <p>
+                これらのコマンドを実行したあと、Firefoxを起動し`localhost`にアクセスすると、Apacheのデフォルトページが表示される。
+            </p>
+            <figure>
+                <img src="Screenshot/image_005.png" width="80%">
+                <figcaption>Apacheのデフォルトページ</figcaption>
+            </figure>
+            <h3>仮想ホストの作成</h3>
+            <p>
+                以下のコマンドを実行して、仮想ホストの設定ファイルを生成する。今回は`test.conf`としたが、ファイル名は何でも良い。
+            </p>
+            <span class="command">$ sudo touch /etc/apache2/sites-available/test.conf</span>
+            <p>
+                事前準備として、今後の作業で必要となるディレクトリの作成を行う。
+                まずは、"/var/www/html/test"というディレクトリを作成する。なお、"/var/www/"の直下であればどの位置にディレクトリを作成しても問題ない。
+            </p>
+            <span class="command">$ sudo mkdir /var/www/html/test </span>
+            <p>
+                次に、作成したディレクトリ内にindex.htmlを用意する。
+            </p>
+            <span class="command">$ sudo touch /var/www/html/test/index.html</span>
+            <p>以下のコマンドを実行すると、作成したHTMLファイルをVimで編集できる。今回は単にh1タグを用いて、
+                "Test Page"と表示するだけのファイルを作成した。
+            </p>
+            <span class="command">$ sudo vi /var/www/html/test/index.html</span>
+            <figure>
+                <img src="Screenshot/image_002.png" width="80%">
+                <figcaption>index.htmlをVimで編集している様子</figcaption>
+            </figure>
+            <p>
+                事前準備を終了後、Vimを使用して仮想ホストの設定ファイルの編集を行う。具体的には、以下のような内容に変更する。
+            </p>
+            <pre class="config">
+&lt;VirtualHost *:80&gt;
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html/test/
+    DirectoryIndex index.html
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+            </pre>
+            <figure>
+                <img src="Screenshot/image_004.png" width="80%">
+                <figcaption>test.confをVimで編集している様子</figcaption>
+            </figure>
+            <p>
+                設定ファイルの有効化のため、次のコマンドを実行する。まず、以下のコマンドを実行して、仮想ホストの有効化を行う。
+            </p>
+            <span class="command">$ sudo a2ensite test.conf</span>
+            <p>
+                そして、Apacheを再起動して設定を反映させる。
+            </p>
+            <span class="command">$ sudo systemctl reload apache2</span>
+            <p>
+                今回は仮想ホストの確認をするため、デフォルトの仮想ホストの無効化を行い、リロードを行う。
+            </p>
+            <span class="command">
+                $ sudo a2dissite 000-default.conf<br>
+                $ sudo systemctl reload apache2
+            </span>
+            <p>
+                Firefoxを起動し、localhostにアクセスすると、先ほど作成したindex.htmlが表示されていることが確認できる。
+            </p>
+            <figure>
+                <img src="Screenshot/image_003.png" width="80%">
+                <figcaption>自作のindex.htmlを表示したlocalhost</figcaption>
+            </figure>
+            <h3>ファイアウォールの設定</h3>
+            <p>
+                まず、ファイアウォールの有効化を行うため、以下のコマンドを実行する。
+            </p>
+            <span class="command">$ sudo ufw enable</span>
+            <p>
+                なお、ファイアウォールのステータスを確認するためには、以下のようなコマンドを実行する。
+            </p>
+            <span class="command">$ sudo ufw status</span>
+            <p>
+                80番ポートの開放をするためには、以下に記した2つのコマンドのどちらかを実行する。
+            </p>
+            <span class="command">$ sudo ufw allow 'Apache'</span>
+            <span class="command">$ sudo ufw allow 80/tcp</span>
+            <p>
+                443番ポートの開放をするためには、以下に記した2つのコマンドのどちらかを実行する。
+            </p>
+            <span class="command">$ sudo ufw allow 'Apache Secure'</span>
+            <span class="command">$ sudo ufw allow 443/tcp</span>
+            <figure>
+                <img src="Screenshot/image_30.png" width="80%">
+                <figcaption>ステータスを確認し、443ポートを開放した様子</figcaption>
+            </figure>
+            <h3>認証設定</h3>
+            <p>
+                認証設定を有効化するため、apache2-utilsのインストールを行う。apache2-utilsにはWebサーバーに役立ついくつかのアドオンが含まれており、
+                その一つに認証機能であるhtpasswdが存在する。今回はhtpasswdを利用し、認証設定を作る。
+            </p>
+            <span class="command">$ sudo apt install apache2-utils</span>
+            <p>
+                次に、ログイン可能なユーザーを追加する。以下のコマンドは、初回実行時限定のコマンドである。"username"は任意のユーザー名を入れて良い。
+                このコマンドを実行すると、パスワードの新規設定を求められる。ユーザー名とパスワードは、認証ページへのアクセスで双方ともに必要になる。
+            </p>
+            <span class="command">$ sudo htpasswd -c /etc/apache2/.htpasswd username</span>
+            <p>
+                以下のコマンドは次回以降に利用できるコマンドである。
+            </p>
+            <span class="command">$ sudo htpasswd /etc/apache2/.htpasswd username</span>
+            <p>
+                これらの設定を完了したあと、利用する仮想ホストの設定ファイルを開く。今回の場合、先程の`test.conf`に書き足す形にする。以下の記述を後ろに追加する。
+                以下の場合では、"test01/"直下のページすべてが認証の対象となる。
+            </p>
+            <pre class="config">
+&lt;Directory "/var/www/html/test/test01"&gt;
+    AuthType Basic
+    AuthName "Restricted Content"
+    AuthUserFile /etc/apache2/.htpasswd
+    Require valid-user
+&lt;/Directory&gt;
+            </pre>
+            <p>
+                なお、設定を完了したあとは必ず以下のコマンドを実行し、Apacheを再起動する。
+            </p>
+            <span class="command">$ sudo systemctl reload apache2</span>
+            <p>
+                設定を完了したら、firefoxを起動し"localhost/test01"を開く。すると、以下のような画面が表示されるため、先程のユーザー名とパスワードを利用すると、問題なくアクセスできる。
+            </p>
+            <figure>
+                <img src="Screenshot/image_33.png" width="80%">
+                <figcaption>認証ページ</figcaption>
+            </figure>
+            <h3>アクセスログについて</h3>
+            <p>
+                Apacheには、アクセスログとエラーログが存在する。アクセスログは、サーバーにアクセスした際の情報を記録するログである。
+                以下のコマンドを実行すると、アクセスログを表示することができる。
+            </p>
+            <span class="command">$ sudo tail -f /var/log/apache2/access.log</span><br>
+            <p>
+                アクセスログは、以下の形式で保存されている。
+            </p>
+            <pre class="config">
+IPアドレス - - [日付:時刻] "リクエスト" ステータスコード バイト数 "リファラ" "ユーザーエージェント"
+            </pre>
+            <p>
+                <ul>
+                    <li>IPアドレス: アクセス元のIPアドレス</li>
+                    <li>日付:時刻: アクセスがあった日時。形式例: Fri Aug 20 00:00:00 2021</li>
+                </ul>
+            </p>
+            <p>
+                一方、エラーログは、サーバーにアクセスした際に発生したエラーを記録するログである。
+                以下のコマンドを実行すると、エラーログを表示することができる。
+            </p>
+            <span class="command">$ sudo tail -f /var/log/apache2/error.log</span><br>
+            <p>
+                エラーログは、以下の形式で保存されている。
+            </p>
+            <pre class="config">
+[日付:時刻] [エラーレベル] [エラーメッセージ]
+            </pre>
+            <p>
+                なお、アクセスログの形式は異なる場合もある。
+            </p>
+        </section>
+        <section>
+            <h2>6. SSHの設定</h2>
+            <p>
+                この項では、Windowsパソコンを使用する。
+            </p>
+            <h3>基本的な設定</h3>
+            <p>
+                SSHとは、ネットワーク通信をセキュア化するためのプロトコルである。
+                TelnetやFTPなどのプロトコルでは、通信内容が平文で送受信される。しかしSSHでは、ログイン処理を含めて全ての通信が暗号化される。
+                SSHを使用することで、データの盗聴やなりすましを防ぐことができる。
+                この項では実際にSSHを使用する手順を通じて、機能を解説する。<br>
+                下記のコマンドで、SSHサーバーを構築するためのソフトウェアをインストールする。
+            </p>
+            <span class="command">$ sudo apt install openssh-server</span>
+            <p>
+                インストールを終えると、基本的にはSSHサーバーがすでに起動している。
+                起動していない場合は、以下のコマンドを実行してSSHサーバーを起動する。
+            </p>
+            <span class="command">$ sudo systemctl start ssh</span>
+            <p>
+                なお、SSHサーバーの自動起動を設定するには、以下のコマンドを実行する。
+            </p>
+            <span class="command">$ sudo systemctl enable ssh</span>
+            <p>
+                SSHサーバーのステータスを確認するには、以下のコマンドを実行する。
+            </p>
+            <span class="command">$ sudo systemctl status ssh</span>
+            <figure>
+                <img src="Screenshot/image_012.png" width="80%">
+                <figcaption>SSHサーバーのステータス確認画面</figcaption>
+            </figure>
+            <h3>二段階認証: 公開鍵認証</h3>
+            <p>
+                SSHには、パスワード認証以外にも公開鍵認証という認証方法が存在する。
+                公開鍵認証は、公開鍵と秘密鍵の2つの鍵を使用して認証を行う方法である。
+                まず、公開鍵と秘密鍵という2つの鍵を生成する。
+                公開鍵を用いて、秘密鍵で暗号化されたデータを復号するという仕組みである。
+                公開鍵は名前の通り他社に公開しても問題ないが、秘密鍵は厳重に管理する必要がある。
+                完全に正確な例えではないが、公開鍵は南京錠で、秘密鍵は鍵というイメージを持つとわかりやすい。
+                この方法を使用することで、パスワード認証よりもセキュリティが向上する。
+            </p>
+            <p>
+                以下のコマンドをLinuxコンピューターではなく、クライアント側（外部からアクセスをする側。今回はWindowsパソコン）で実行する。
+                暗号の種類については、今回はed25519を使用する。
+            </p>
+            <span class="command">$ ssh -keygen -t ed25519 -f key_test</span>
+            <figure>
+                <img src="Screenshot/image_022.png" width="80%">
+                <figcaption>公開鍵の生成</figcaption>
+            </figure>
+            <p>
+                このコマンドを実行すると、秘密鍵と公開鍵がそれぞれ`key_test`と`key_test.pub`という名前で生成される。
+                生成された公開鍵をLinuxコンピューターに転送するため、以下のコマンドを実行する。
+            </p>
+            <span class="command">
+                $ cat $HOME\key_test | ssh （ホスト名）-p 50022 "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+            </span>
+            <p>
+                このコマンドを実行することで、公開鍵がLinuxコンピューターに転送され、公開鍵認証が有効化される。
+            </p>
+            <p>
+                なお、公開鍵認証を有効化するためには、Linuxコンピューター側で仮想ホストの設定ファイルを開き、以下のような記述を追加する。
+                この記述は、公開鍵認証とパスワード認証を併用するための記述である。
+            </p>
+            <pre class="config">
+AuthenticationMethods publickey, password
+            </pre>
+            <figure>
+                <img src="Screenshot/image_31.png" width="80%">
+                <figcaption>公開鍵認証の設定</figcaption>
+            </figure>
+            <p>
+                これにより、公開鍵認証とパスワード認証の両方が有効化される。<br>
+                次に、WindowsパソコンからLinuxコンピューターにアクセスするために、Windowsパソコンにおいて以下のコマンドを実行する。
+            </p>
+            <span class="command">$ ssh -i key_test (ユーザー名)@(ホスト名) -p 50022</span>
+            <figure>
+                <img src="Screenshot/image_024.png" width="80%">
+                <figcaption>二段階認証によるSSH接続</figcaption>
+            </figure>
+            <p>
+                図において、"passphrase"と"password"の入力が求められる様子がわかる。"passphrase"は秘密鍵のパスワードであり、"password"はLinuxコンピューターのパスワードである。
+            </p>
+        </section>
+        <section>
+            <h2>7. Docker</h2>
+            <p>
+                Dockerとは、Docker.incが開発したコンテナ型の仮想化ソフトウェアである。Dockerでは、一つ一つの仮想マシンはコンテナと呼ばれる単位で管理される。
+                従来の仮想化とは異なり、カーネルはホストOSと同じものを用いるため、CPUやメモリの割当を行う必要がない。
+                コンテナの起動は非常に高速であり、一瞬で起動することができる。
+                またコンテナには、アプリケーションやライブラリ、設定ファイルなどが含まれており、これをイメージとして配布することもできる。
+                この項ではDockerを使用して、より簡単な手順でWebサーバーを構築する手順を解説する。
+            </p>
+            <p>
+                まず、公式サイト(https://docs.docker.com/engine/install/ubuntu/)にアクセスする。
+                ページ内に存在する以下のコマンドを実行することで、Dockerをインストールすることができる。
+            </p>
+            <span class="command">
+                # Add Docker's official GPG key:<br>
+                sudo apt-get update<br>
+                sudo apt-get install ca-certificates curl<br>
+                sudo install -m 0755 -d /etc/apt/keyrings<br>
+                sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc<br>
+                sudo chmod a+r /etc/apt/keyrings/docker.asc<br>
+                <br>
+                # Add the repository to Apt sources:<br>
+                echo \
+                "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+                $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+                sudo tee /etc/apt/sources.list.d/docker.list > /dev/null<br>
+                sudo apt-get update
+            </span>
+            <p>
+                以上のコマンド群は、Docker aptリポジトリを追加するもので、Dockerをインストールするための前準備といえる。
+                次のコマンドを実行すると、Dockerがインストールされる。
+            </p>
+            <span class="command">$ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</span>
+            <p>
+                インストール後は基本的にDockerが起動している。
+                以下のコマンドを実行することで、Dockerの状態を確認することができる。
+            </p>
+            <span class="command">$ sudo systemctl status docker</span>
+            <p>
+                次に、最初のコンテナを起動させる準備をする。以下のコマンドを実行し、hello-worldイメージをダウンロードする。
+            </p>
+            <span class="command">$ sudo docker run hello-world</span>
+            <p>
+                <code>Unable to find image 'hello-world:latest' locally</code>という、エラーとも取れるメッセージが表示されるが、無視して良い。
+                その後、<code>Hello from Docker!</code>というメッセージが表示されれば、Dockerのインストールは成功しており、コンテナの起動も成功しているということになる。
+            </p>
+            <figure>
+                <img src="Screenshot/image_014.png" width="80%">
+                <figcaption>hello-worldイメージのダウンロード後</figcaption>
+            </figure>
+            <p>
+                コンテナ一覧を表示するには、以下のコマンドを実行する。
+            </p>
+            <span class="command">$ sudo docker ls</span>
+            <figure>
+                <img src="Screenshot/image_020.png" width="80%">
+                <figcaption>コンテナ一覧の表示（図下部）</figcaption>
+            </figure>
+            <p>
+                次に、httpdイメージを使用してWebサーバーを構築する。まず、以下のコマンドを実行することで、ディレクトリを作成する。
+                今回の場合"test"となっている部分については、任意の名前を用いてよい。
+            </p>
+            <span class="command">$ mkdir -p ~/test/htdocs ~/test/conf</span>
+            <p>
+                作成したディレクトリの<code>htdocs/</code>直下に、index.htmlを作成する。以下のコマンドを実行することで、index.htmlを作成することができる。
+            </p>
+            <span class="command">
+                $ cd ~/test/htdocs<br>
+                $ touch index.html<br>
+                $ vi index.html
+            </span>
+            <p>
+                今回は、以下のように記述した。h1タグのみを用いて、"Hello World!"と表示する。
+            </p>
+            <figure>
+                <img src="Screenshot/image_016.png" width="80%">
+                <figcaption>index.htmlをVimで編集している様子</figcaption>
+            </figure>
+            <h3>httpdコンテナの作成</h3>
+            <p>
+                次に、以下のコマンドを実行して、コンテナを作成し起動する。
+            </p>
+            <span class="command">$ sudo docker run -d -p 8080:80 --name my-apache -v ~/test/htdocs:/usr/local/apache2/htdocs/ -v ./conf:/usr/apache2/conf httpd:2.4</span>
+            <p>
+                これにより、httpdイメージを使用してコンテナが作成され、8080番ポートでWebサーバーが起動する。<br>
+                作成したWebページにアクセスするには、"localhost:8080"と入力した場合、アクセスができなかった。
+                そこで、"http://localhost:8080"と入力すると、無事アクセスできた。
+            </p>
+            <figure>
+                <img src="Screenshot/image_018.png" width="80%">
+                <figcaption>httpdイメージを使用してコンテナを作成し、起動した様子</figcaption>
+            </figure>
+            <figure>
+                <img src="Screenshot/image_021.png" width="80%">
+                <figcaption>ブラウザで表示させた様子</figcaption>
+            </figure>
+        </section>
+        <section>
+            <h2>8. まとめ</h2>
+            <p>
+                今回は、Linuxの基本的な操作から、主にApacheでのサーバー設定について学習した。
+                具体的には、Linuxの基本的なコマンド操作、Apacheの設定、ファイアウォールの設定、認証設定、SSHの設定、Dockerの設定について学習した。
+                また、今回の実験で使用したコンピューター特有のエラーやトラブル等についても対処し、言語化することができた。
+            </p>
+        </section>
+    </main>
+    <footer>
+        <div class="quotes">
+            <h2>参考文献・サイト</h2>
+            <ul>
+                <li>図解でわかるLinuxのすべて: コマンド操作&パッケージ管理, 西村めぐみ, 日本実業出版社, 2000年</li>
+                <li>図解でわかるLinux環境設定のすべて, 西村めぐみ, 日本実業出版社, 2004年</li>
+                <li>Docker による仮想化環境を利用した情報系演習科目の実践, 山岸芳夫, 工学教育, 71 巻, 2 号, 2023</li>
+                <li>コンテナ仮想化を用いたサーバ環境構築技術の修得, 廣木 智栄, 小澤 伸也, 道幸 雄真, 清水 尚希, 福井大学 工学部技術部 活動報告集, Vol.29, 2024</li>
+                <li><a href="https://blog.bleuazur.org/2020/09/25/UbuntuでPCを再生！でも起動しない！～そんな時の一例/">UbuntuでPCを再生！でも起動しない！〜その時の一例〜, BLEUAZUR CONSULTING BLOG, 2020年12月9日, 2024年12月16日閲覧</a></li>
+                <li><a href="https://yuki130.hatenablog.com/entry/2023/07/27/164752">【解決策】Waiting for cache lock: Could not get lock /var/lib/dpkg/lock-frontendの対処法　Ubuntu 20.04 on Raspberry Pi 4, 2025年1月20日閲覧</a></li>
+                <li><a href="https://packages.debian.org/ja/sid/apache2-utils">Debian -- sid の apache2-utils パッケージに関する詳細, debian, 2025年1月20日閲覧</a></li>
+                <li><a href="https://docs.docker.com/engine/install/ubuntu/">Install Docker Engine on Ubuntu, Docker Documentation, 2025年2月3日閲覧</a></li>
+                <li><a href="https://httpd.apache.org/ABOUT_APACHE.html">About the Apache HTTP Server Project, Apache HTTP Server Project, 2025年2月5日閲覧</a></li>
+                <li><a href="https://httpd.apache.org/">Apache HTTP Server Project, Apache HTTP Server Project, 2025年2月6日閲覧</a></li>
+                <li><a href="https://www.moj.go.jp/ONLINE/CERTIFICATION/GUIDE/guide02.html">第２　電子取引社会における電子署名と認証の仕組み, 法務省, 2025年2月6日閲覧</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

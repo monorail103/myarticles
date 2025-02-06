@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>オセロ</title>
+        <link rel="stylesheet" href="css/othello.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap">
+        <script src="js/othello.js" defer></script>
+    </head>
+    <body>
+        <div class="main">
+            <h1>オセロ</h1>
+            <p id="message">試合開始！</p>
+            <select id="difficulty">
+                <option value="easy">簡単</option>
+                <option value="medium">普通</option>
+                <option value="hard">難しい</option>
+            </select>
+            <p id="score">黒:0 - 白:0</p>
+            <div id="board"></div>
+            <button id="reset">リセット</button>
+            <button id="pass">パス</button>
+            <button id="openModal">このゲームについて</button>
+        </div>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>オセロ</h2>
+                <p>Github Copilotの力を借りて作成した、暇つぶし目的のオセロゲームです。</p>
+                <p>難易度は簡単、普通、難しいの3段階から選択できます。</p>
+                <p>普通・難しいでは、MCTSアルゴリズムを使用しています。</p>
+            </div>
+        </div>
+    </body>
+</html>

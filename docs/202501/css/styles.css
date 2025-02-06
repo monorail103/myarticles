@@ -1,0 +1,195 @@
+body {
+    font-family: "Noto Sans JP", "Arial", "Helvetica", sans-serif;
+    margin: 20px;
+    line-height: 1.6;
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+nav.toc {
+    background-color: #ffffff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    max-width: 300px;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+header p {
+    font-size: 16px;
+    color: #666;
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+code {
+    font-family: "Courier New", Courier, monospace;
+    background-color: #f9f9f9;
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-family: "游ゴシック", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: #444;
+}
+
+h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+span {
+    display: block;
+    margin-bottom: 10px;
+}
+
+span.reference-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.box {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+caption {
+    caption-side: top;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+figure {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+figcaption {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.code-label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    color: #333;
+}
+
+.list-label {
+    font-weight: bold;
+    margin: 10px 0 5px;
+    color: #555;
+}
+
+/*Linux コマンドスタイル*/
+span.command {
+    display: block;
+    background-color: #2d2d2d;
+    color: #ffffff;
+    font-family: "Ubuntu Mono", monospace;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/*Linux エラースタイル*/
+span.error {
+    display: block;
+    background-color: #000000;
+    color: #ff0000;
+    font-family: "Courier New", Courier, monospace;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/*Linux 設定ファイルのスタイル*/
+pre.config {
+    display: block;
+    background-color: #f9f9f9;
+    color: #333;
+    font-family: "Courier New", Courier, monospace;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/*引用*/
+.quotes { 
+    max-width: 800px;
+    text-align: left;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+/*項ごとの参考文献スタイル*/
+.references {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
